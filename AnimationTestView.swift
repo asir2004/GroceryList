@@ -73,6 +73,8 @@ struct AnimationTestView: View {
                     }
                 }
             }
+            .buttonStyle(.bordered)
+            .controlSize(.large)
         }
     }
 }
