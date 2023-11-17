@@ -13,6 +13,7 @@ struct ContentView: View {
     @Query(sort: \Item.creationDate, order: .reverse) private var items: [Item]
     @State private var name: String = ""
     @State private var largeTitle = true
+    @State private var showDeleteAllAlert = false
     @FocusState private var focusState: Bool
 
     var body: some View {
@@ -52,7 +53,7 @@ struct ContentView: View {
                             .foregroundStyle(.mint)
                             .imageScale(.large)
                             .foregroundStyle(Color.accentColor)
-                            .symbolEffect(.bounce.down, value: item.complete)
+                            .symbolEffect(.bounce.down, options: .speed(1.2), value: item.complete)
                         
                         GroceryItemView(item: item)
                         
@@ -85,11 +86,34 @@ struct ContentView: View {
             .padding(.top, largeTitle ? 80 : 40)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .overlay(alignment: largeTitle ? .topLeading : .top) {
-                Text("Grocery: \(items.count)")
-                    .font(largeTitle ? .largeTitle : .headline).bold()
-                    .padding(.top, largeTitle ? 30 : 10)
-                    .padding(.horizontal)
-                    .contentTransition(.numericText(value: Double(items.count)))
+                HStack(spacing: 0) {
+                    Text("Grocery: ")
+                        .font(largeTitle ? .largeTitle : .headline).bold()
+                        .foregroundStyle(.tertiary)
+                    Text("\(calculateUncompletedCount())")
+                        .font(largeTitle ? .largeTitle : .headline).bold()
+                        .foregroundStyle(.secondary)
+                        .contentTransition(.numericText(countsDown: true))
+                    Text(": \(items.count)")
+                        .font(largeTitle ? .largeTitle : .headline).bold()
+                        .contentTransition(.numericText(countsDown: true))
+                }
+                .padding(.top, largeTitle ? 30 : 10)
+                .padding(.horizontal)
+            }
+            .overlay(alignment: .topTrailing) {
+                Button {
+                    showDeleteAllAlert = true
+                } label: {
+                    Label("Delete All", systemImage: "trash")
+                }
+                .labelStyle(.iconOnly)
+                .padding()
+            }
+            .alert("Delete All Items?", isPresented: $showDeleteAllAlert) {
+                Button("Confirm", role: .destructive) {
+                    deleteAll()
+                }
             }
         }
     }
@@ -108,6 +132,22 @@ struct ContentView: View {
                 modelContext.delete(items[index])
             }
         }
+    }
+    
+    private func deleteAll() {
+        for item in items {
+            modelContext.delete(item)
+        }
+    }
+    
+    func calculateUncompletedCount() -> Int {
+        var count = 0
+        for item in items {
+            if !item.complete {
+                count += 1
+            }
+        }
+        return count
     }
 }
 
