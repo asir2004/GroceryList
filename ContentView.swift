@@ -14,11 +14,13 @@ struct ContentView: View {
     @State private var name: String = ""
     @State private var largeTitle = true
     @State private var showDeleteAllAlert = false
+    @State private var showCompleted = false
     @FocusState private var focusState: Bool
+    @State private var testViewIsPresented = false
 
     var body: some View {
         NavigationStack {
-            List {
+            VStack {
                 HStack {
                     TextField("New Item", text: $name)
                         .focused($focusState)
@@ -37,40 +39,50 @@ struct ContentView: View {
                     .buttonStyle(.bordered)
                     .disabled(name == "")
                 }
-                .listRowSeparator(.visible, edges: .bottom)
+                .padding(7)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .foregroundStyle(.ultraThinMaterial)
+                )
+                .padding(.horizontal)
                 
-                ForEach(items) { item in
-                    HStack {
-                        Image(systemName: item.complete ? "checkmark.circle" : "circle")
-                            .onTapGesture {
-                                withAnimation {
-                                    item.complete.toggle()
-                                    #if os(iOS)
-                                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                                    #endif
+                List {
+                    ForEach(items) { item in
+                        if !item.complete || showCompleted {
+                            HStack {
+                                Image(systemName: item.complete ? "checkmark.circle" : "circle")
+                                    .onTapGesture {
+                                        withAnimation {
+                                            item.complete.toggle()
+                                            #if os(iOS)
+                                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                            #endif
+                                        }
+                                    }
+                                    .foregroundStyle(.mint)
+                                    .imageScale(.large)
+                                    .foregroundStyle(Color.accentColor)
+                                    .symbolEffect(.bounce.down, options: .speed(1.2), value: item.complete)
+                                
+                                GroceryItemView(item: item)
+                                
+                                //                        Text(item.name)
+                                //                            .foregroundStyle(item.complete ? .secondary : .primary)
+                                //                            .strikethrough(item.complete)
+                                
+                                Spacer()
+                                
+                                Button("Delete") {
+                                    modelContext.delete(item)
                                 }
+                                .foregroundStyle(.red)
+                                .buttonStyle(.bordered)
                             }
-                            .foregroundStyle(.mint)
-                            .imageScale(.large)
-                            .foregroundStyle(Color.accentColor)
-                            .symbolEffect(.bounce.down, options: .speed(1.2), value: item.complete)
-                        
-                        GroceryItemView(item: item)
-                        
-//                        Text(item.name)
-//                            .foregroundStyle(item.complete ? .secondary : .primary)
-//                            .strikethrough(item.complete)
-                        
-                        Spacer()
-                        
-                        Button("Delete") {
-                            modelContext.delete(item)
+                            .listRowSeparator(.visible, edges: .top)
                         }
-                        .foregroundStyle(.red)
-                        .buttonStyle(.bordered)
                     }
+                    .onDelete(perform: deleteItems)
                 }
-                .onDelete(perform: deleteItems)
             }
             .onAppear(perform: {
                 focusState = true
@@ -82,7 +94,22 @@ struct ContentView: View {
                     }
                 }
             }
+            .overlay {
+                if items.isEmpty {
+                    VStack {
+                        Image(systemName: "checklist")
+                            .font(.largeTitle)
+                            .imageScale(.large)
+                            .foregroundStyle(.tertiary)
+                            .padding(6)
+                        Text("No Items")
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
             .listStyle(.plain)
+            .listRowSeparator(.hidden)
             .padding(.top, largeTitle ? 80 : 40)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .overlay(alignment: largeTitle ? .topLeading : .top) {
@@ -102,19 +129,42 @@ struct ContentView: View {
                 .padding(.horizontal)
             }
             .overlay(alignment: .topTrailing) {
-                Button {
-                    showDeleteAllAlert = true
-                } label: {
-                    Label("Delete All", systemImage: "trash")
+                HStack {
+                    Button {
+                        showDeleteAllAlert = true
+                    } label: {
+                        Label("Delete All", systemImage: "trash")
+                    }
+                    .labelStyle(.iconOnly)
+                    .padding()
+                    
+                    Button {
+                        withAnimation {
+                            showCompleted.toggle()
+                        }
+                    } label: {
+                        Label("Show Completed", systemImage: "checkmark")
+                    }
+                    .labelStyle(.iconOnly)
+                    .padding()
+                    
+                    Button {
+                        testViewIsPresented.toggle()
+                    } label: {
+                        Label("Show Completed", systemImage: "questionmark")
+                    }
+                    .labelStyle(.iconOnly)
+                    .padding()
                 }
-                .labelStyle(.iconOnly)
-                .padding()
             }
             .alert("Delete All Items?", isPresented: $showDeleteAllAlert) {
                 Button("Confirm", role: .destructive) {
                     deleteAll()
                 }
             }
+            .sheet(isPresented: $testViewIsPresented, content: {
+                AnimationTestView()
+            })
         }
     }
 
