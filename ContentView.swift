@@ -17,6 +17,7 @@ struct ContentView: View {
     @State private var showCompleted = false
     @FocusState private var focusState: Bool
     @State private var testViewIsPresented = false
+    @AppStorage("swipeToDeleteIsOn") var swipeToDeleteIsOn = false
 
     var body: some View {
         NavigationStack {
@@ -72,16 +73,19 @@ struct ContentView: View {
                                 
                                 Spacer()
                                 
-                                Button("Delete") {
-                                    modelContext.delete(item)
+                                if !swipeToDeleteIsOn {
+                                    Button("Delete") {
+                                        modelContext.delete(item)
+                                    }
+                                    .foregroundStyle(.red)
+                                    .buttonStyle(.bordered)
+                                    .frame(height: 20)
                                 }
-                                .foregroundStyle(.red)
-                                .buttonStyle(.bordered)
                             }
                             .listRowSeparator(.visible, edges: .top)
                         }
                     }
-                    .onDelete(perform: deleteItems)
+                    .onDelete(perform: swipeToDeleteIsOn ? deleteItems : nil)
                 }
             }
             .onAppear(perform: {
@@ -130,23 +134,48 @@ struct ContentView: View {
             }
             .overlay(alignment: .topTrailing) {
                 HStack {
-                    Button {
-                        showDeleteAllAlert = true
-                    } label: {
-                        Label("Delete All", systemImage: "trash")
-                    }
-                    .labelStyle(.iconOnly)
-                    .padding()
-                    
-                    Button {
-                        withAnimation {
-                            showCompleted.toggle()
+                    Menu {
+                        Button {
+                            showDeleteAllAlert = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "trash")
+                                
+                                Text("Delete All")
+                            }
+                        }
+                        
+                        Toggle(isOn: $showCompleted) {
+                            HStack {
+                                Image(systemName: "checkmark")
+                                
+                                Text("Show Completed")
+                                
+                                Spacer()
+                                
+                                if showCompleted {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
+                        }
+                        
+                        Toggle(isOn: $swipeToDeleteIsOn) {
+                            HStack {
+                                Image(systemName: "arrow.left")
+                                
+                                Text("Swipe to Delete")
+                                
+                                Spacer()
+                                
+                                if swipeToDeleteIsOn {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
                         }
                     } label: {
-                        Label("Show Completed", systemImage: "checkmark")
+                        Label("Menu", systemImage: "ellipsis.circle")
                     }
                     .labelStyle(.iconOnly)
-                    .padding()
                     
                     Button {
                         testViewIsPresented.toggle()
@@ -198,6 +227,16 @@ struct ContentView: View {
             }
         }
         return count
+    }
+}
+
+extension View {
+    @ViewBuilder func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
     }
 }
 

@@ -1,73 +1,73 @@
 {
   "images" : [
     {
-      "filename" : "GroceryListAppIcon.png",
+      "filename" : "GroceryListAppIcon2.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
     },
     {
-      "filename" : "GroceryListAppIcon 1.png",
+      "filename" : "GroceryListAppIcon2 1.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "16x16"
     },
     {
-      "filename" : "GroceryListAppIcon 2.png",
+      "filename" : "GroceryListAppIcon2 2.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "16x16"
     },
     {
-      "filename" : "GroceryListAppIcon 3.png",
+      "filename" : "GroceryListAppIcon2 3.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "32x32"
     },
     {
-      "filename" : "GroceryListAppIcon 4.png",
+      "filename" : "GroceryListAppIcon2 4.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "32x32"
     },
     {
-      "filename" : "GroceryListAppIcon 6.png",
+      "filename" : "GroceryListAppIcon2 5.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "128x128"
     },
     {
-      "filename" : "GroceryListAppIcon 5.png",
+      "filename" : "GroceryListAppIcon2 6.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "128x128"
     },
     {
-      "filename" : "GroceryListAppIcon 8.png",
+      "filename" : "GroceryListAppIcon2 7.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "256x256"
     },
     {
-      "filename" : "GroceryListAppIcon 7.png",
+      "filename" : "GroceryListAppIcon2 8.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "256x256"
     },
     {
-      "filename" : "GroceryListAppIcon 9.png",
+      "filename" : "GroceryListAppIcon2 10.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "512x512"
     },
     {
-      "filename" : "GroceryListAppIcon 10.png",
+      "filename" : "GroceryListAppIcon2 9.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "512x512"
     },
     {
-      "filename" : "GroceryListAppIcon 11.png",
+      "filename" : "GroceryListAppIcon2 11.png",
       "idiom" : "universal",
       "platform" : "watchos",
       "size" : "1024x1024"
