@@ -14,6 +14,7 @@ struct ContentView: View {
     @State private var name: String = ""
     @State private var largeTitle = true
     @State private var showDeleteAllAlert = false
+    @State private var showDeleteFinishedAlert = false
     @State private var showCompleted = false
     @FocusState private var focusState: Bool
     @State private var testViewIsPresented = false
@@ -138,39 +139,23 @@ struct ContentView: View {
                         Button {
                             showDeleteAllAlert = true
                         } label: {
-                            HStack {
-                                Image(systemName: "trash")
-                                
-                                Text("Delete All")
-                            }
+                            Label("Delete All", systemImage: "trash")
                         }
+                        .disabled(items.isEmpty)
+                        
+                        Button {
+                            showDeleteFinishedAlert = true
+                        } label: {
+                            Label("Delete Finished", systemImage: "xmark.bin")
+                        }
+                        .disabled(items.isEmpty)
                         
                         Toggle(isOn: $showCompleted) {
-                            HStack {
-                                Image(systemName: "checkmark")
-                                
-                                Text("Show Completed")
-                                
-                                Spacer()
-                                
-                                if showCompleted {
-                                    Image(systemName: "checkmark")
-                                }
-                            }
+                            Label("Show Completed", systemImage: "checkmark")
                         }
                         
                         Toggle(isOn: $swipeToDeleteIsOn) {
-                            HStack {
-                                Image(systemName: "arrow.left")
-                                
-                                Text("Swipe to Delete")
-                                
-                                Spacer()
-                                
-                                if swipeToDeleteIsOn {
-                                    Image(systemName: "checkmark")
-                                }
-                            }
+                            Label("Swipe to Delete", systemImage: "arrow.left")
                         }
                     } label: {
                         Label("Menu", systemImage: "ellipsis.circle")
@@ -189,6 +174,11 @@ struct ContentView: View {
             .alert("Delete All Items?", isPresented: $showDeleteAllAlert) {
                 Button("Confirm", role: .destructive) {
                     deleteAll()
+                }
+            }
+            .alert("Delete Finished Items?", isPresented: $showDeleteFinishedAlert) {
+                Button("Confirm", role: .destructive) {
+                    deleteFinished()
                 }
             }
             .sheet(isPresented: $testViewIsPresented, content: {
@@ -216,6 +206,14 @@ struct ContentView: View {
     private func deleteAll() {
         for item in items {
             modelContext.delete(item)
+        }
+    }
+    
+    private func deleteFinished() {
+        for item in items {
+            if item.complete {
+                modelContext.delete(item)
+            }
         }
     }
     
