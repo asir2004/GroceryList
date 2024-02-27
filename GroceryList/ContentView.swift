@@ -27,11 +27,12 @@ struct ContentView: View {
                     TextField("New Item", text: $name)
                         .focused($focusState)
                         .onSubmit {
+                            focusState = true
                             if name != "" {
                                 addItem()
                             }
-                            focusState = true
                         }
+                        .padding(.leading, 10)
                         .scrollDismissesKeyboard(.interactively)
                         .submitLabel(.continue)
                     
@@ -76,7 +77,9 @@ struct ContentView: View {
                                 
                                 if !swipeToDeleteIsOn {
                                     Button("Delete") {
-                                        modelContext.delete(item)
+                                        withAnimation(.bouncy) {
+                                            modelContext.delete(item)
+                                        }
                                     }
                                     .foregroundStyle(.red)
                                     .buttonStyle(.bordered)
@@ -188,7 +191,7 @@ struct ContentView: View {
     }
 
     private func addItem() {
-        withAnimation {
+        withAnimation(.bouncy) {
             let newItem = Item(creationDate: Date(), name: name, complete: false)
             modelContext.insert(newItem)
             name = ""
